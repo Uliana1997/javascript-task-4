@@ -14,8 +14,16 @@ exports.query = function (collection) {
     var newCollection = copyCollections(collection);
     var fields = Array.prototype.slice.call(arguments).slice(1);
     function compare(one, another) {
+        var x = priority[one.name];
+        var y = priority[another.name];
+        if (x < y) {
+            return -1;
+        }
+        if (x > y) {
+            return 1;
+        }
 
-        return priority[one.name] - priority[another.name];
+        return 0;
     }
     fields.sort(compare);
     fields.forEach(function (func) {
