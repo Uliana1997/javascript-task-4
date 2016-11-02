@@ -60,10 +60,25 @@ exports.sortBy = function (property, order) {
         function comparedesc(one, another) {
             return another[property] - one[property];
         }
-        if (order === 'asc') {
-            collection.sort(compare);
+        if (property === 'age') {
+            if (order === 'asc') {
+                collection.sort(compare);
+            } else {
+                collection.sort(comparedesc);
+            }
         } else {
-            collection.sort(comparedesc);
+            collection.sort(function (one, another) {
+                var x = one.name.toLowerCase();
+                var y = another.name.toLowerCase();
+                if (x < y) {
+                    return -1;
+                }
+                if (x > y) {
+                    return 1;
+                }
+
+                return 0;
+            });
         }
 
         return collection;
@@ -94,8 +109,7 @@ exports.filterIn = function (property, values) {
 };
 
 function containsObject(obj, collection) {
-    var x;
-    for (x in collection) {
+    for (var x in collection) {
         if (collection.hasOwnProperty(x) && collection[x] === obj) {
             return true;
         }
