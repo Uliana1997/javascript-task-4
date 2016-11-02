@@ -68,8 +68,8 @@ exports.sortBy = function (property, order) {
             }
         } else {
             collection.sort(function (one, another) {
-                var x = one.name.toLowerCase();
-                var y = another.name.toLowerCase();
+                var x = one.name;
+                var y = another.name;
                 if (x < y) {
                     return -1;
                 }
