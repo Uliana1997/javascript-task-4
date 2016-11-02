@@ -109,18 +109,11 @@ exports.filterIn = function (property, values) {
 
 exports.format = function (property, formatter) {
     return function format(collection) {
-        collection.forEach(function (friend, i) {
-            var newFriendList = {};
-            for (var field in friend) {
-                if (field !== undefined) {
-                    newFriendList[field] = field === property
-                            ? formatter(friend[field]) : friend[field];
-                }
-            }
-            collection[i] = newFriendList;
-        });
+        return collection.map(function (friend) {
+            friend[property] = formatter(friend[property]);
 
-        return collection;
+            return friend;
+        });
     };
 };
 
