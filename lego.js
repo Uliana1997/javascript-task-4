@@ -4,12 +4,10 @@ exports.isStar = false;
 
 var priority = {
     'filterIn': 1,
-    'and': 2,
-    'or': 3,
-    'sortBy': 4,
-    'select': 5,
-    'limit': 6,
-    'format': 7
+    'sortBy': 2,
+    'select': 3,
+    'limit': 4,
+    'format': 5
 };
 
 exports.query = function (collection) {
@@ -59,10 +57,13 @@ exports.sortBy = function (property, order) {
         function compare(one, another) {
             return one[property] - another[property];
         }
+        function comparedesc(one, another) {
+            return another[property] - one[property];
+        }
         if (order === 'asc') {
             collection.sort(compare);
         } else {
-            collection.sort(!compare);
+            collection.sort(comparedesc);
         }
 
         return collection;
