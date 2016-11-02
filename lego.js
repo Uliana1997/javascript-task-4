@@ -1,70 +1,123 @@
 'use strict';
 
-/**
- * Сделано задание на звездочку
- * Реализованы методы or и and
- */
-exports.isStar = true;
+exports.isStar = false;
 
-/**
- * Запрос к коллекции
- * @param {Array} collection
- * @params {...Function} – Функции для запроса
- * @returns {Array}
- */
+var priority = {
+    'filterIn': 1,
+    'and': 2,
+    'or': 3,
+    'sortBy': 4,
+    'select': 5,
+    'limit': 6,
+    'format': 7
+};
+
 exports.query = function (collection) {
-    return collection;
+    var newCollection = copyCollections(collection);
+    var fields = Array.prototype.slice.call(arguments).slice(1);
+    function compare(one, another) {
+
+        return priority[one.name] - priority[another.name];
+    }
+    fields.sort(compare);
+    fields.forEach(function (func) {
+        newCollection = func(newCollection);
+    });
+
+    return newCollection;
 };
 
-/**
- * Выбор полей
- * @params {...String}
- */
+function copyCollections(collection) {
+
+    return (collection.map(function (friend) {
+
+        return Object.assign({}, friend);
+    }));
+}
+
 exports.select = function () {
-    return;
+    var fields = Array.prototype.slice.call(arguments);
+
+    return function select(collection) {
+        var result = [];
+        collection.forEach(function (friend) {
+            var newFriend = {};
+            for (var field in friend) {
+                if (fields.indexOf(field) >= 0) {
+                    newFriend[field] = friend[field];
+                }
+            }
+            result.push(newFriend);
+        });
+
+        return result;
+    };
 };
 
-/**
- * Фильтрация поля по массиву значений
- * @param {String} property – Свойство для фильтрации
- * @param {Array} values – Доступные значения
- */
-exports.filterIn = function (property, values) {
-    console.info(property, values);
-
-    return;
-};
-
-/**
- * Сортировка коллекции по полю
- * @param {String} property – Свойство для фильтрации
- * @param {String} order – Порядок сортировки (asc - по возрастанию; desc – по убыванию)
- */
 exports.sortBy = function (property, order) {
-    console.info(property, order);
+    return function sortBy(collection) {
+        function compare(one, another) {
+            return one[property] - another[property];
+        }
+        if (order === 'asc') {
+            collection.sort(compare);
+        } else {
+            collection.sort(!compare);
+        }
 
-    return;
+        return collection;
+    };
 };
 
-/**
- * Форматирование поля
- * @param {String} property – Свойство для фильтрации
- * @param {Function} formatter – Функция для форматирования
- */
-exports.format = function (property, formatter) {
-    console.info(property, formatter);
-
-    return;
-};
-
-/**
- * Ограничение количества элементов в коллекции
- * @param {Number} count – Максимальное количество элементов
- */
 exports.limit = function (count) {
-    console.info(count);
+    return function limit(collection) {
+        return collection.slice(0, count);
+    };
+};
 
-    return;
+exports.filterIn = function (property, values) {
+    return function filterIn(collection) {
+        var newSorted = [];
+        collection.forEach(function (friend) {
+            for (var field in friend) {
+                if (property === field.toString() &&
+                values.indexOf(friend[field]) >= 0 &&
+                !containsObject(friend, newSorted)) {
+                    newSorted.push(Object.assign({}, friend));
+                }
+            }
+        });
+
+        return newSorted;
+    };
+};
+
+function containsObject(obj, collection) {
+    var x;
+    for (x in collection) {
+        if (collection.hasOwnProperty(x) && collection[x] === obj) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+exports.format = function (property, formatter) {
+    return function format(collection) {
+        collection.forEach(function (friend, i) {
+            var newFriendList = {};
+            for (var field in friend) {
+                if (field !== undefined) {
+                    newFriendList[field] = field === property
+                            ? formatter(friend[field]) : friend[field];
+                }
+            }
+            collection[i] = newFriendList;
+        });
+
+        return collection;
+    };
 };
 
 if (exports.isStar) {
