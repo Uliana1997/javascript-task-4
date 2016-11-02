@@ -75,7 +75,7 @@ exports.sortBy = function (property, order) {
                 collection.sort(comparedesc);
             }
         }
-        if (property === 'desc') {
+        if (property !== 'age') {
             if (order === 'asc') {
                 collection.sort(function (one, another) {
                     var x = one.name;
