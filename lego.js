@@ -74,19 +74,35 @@ exports.sortBy = function (property, order) {
             } else {
                 collection.sort(comparedesc);
             }
-        } else {
-            collection.sort(function (one, another) {
-                var x = one.name;
-                var y = another.name;
-                if (x < y) {
-                    return -1;
-                }
-                if (x > y) {
-                    return 1;
-                }
+        }
+        if (property === 'desc') {
+            if (order === 'asc') {
+                collection.sort(function (one, another) {
+                    var x = one.name;
+                    var y = another.name;
+                    if (x < y) {
+                        return -1;
+                    }
+                    if (x > y) {
+                        return 1;
+                    }
 
-                return 0;
-            });
+                    return 0;
+                });
+            } else {
+                collection.sort(function (one, another) {
+                    var x = one.name;
+                    var y = another.name;
+                    if (x < y) {
+                        return 1;
+                    }
+                    if (x > y) {
+                        return -1;
+                    }
+
+                    return 0;
+                });
+            }
         }
 
         return collection;
