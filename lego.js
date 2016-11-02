@@ -41,7 +41,7 @@ exports.select = function () {
         collection.forEach(function (friend) {
             var newFriend = {};
             for (var field in friend) {
-                if (fields.indexOf(field) >= 0) {
+                if (fields.indexOf(field) !== -1) {
                     newFriend[field] = friend[field];
                 }
             }
@@ -97,8 +97,7 @@ exports.filterIn = function (property, values) {
         collection.forEach(function (friend) {
             for (var field in friend) {
                 if (property === field.toString() &&
-                values.indexOf(friend[field]) >= 0 &&
-                !containsObject(friend, newSorted)) {
+                values.indexOf(friend[field]) !== -1) {
                     newSorted.push(Object.assign({}, friend));
                 }
             }
@@ -107,16 +106,6 @@ exports.filterIn = function (property, values) {
         return newSorted;
     };
 };
-
-function containsObject(obj, collection) {
-    for (var x in collection) {
-        if (collection.hasOwnProperty(x) && collection[x] === obj) {
-            return true;
-        }
-    }
-
-    return false;
-}
 
 exports.format = function (property, formatter) {
     return function format(collection) {
