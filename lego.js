@@ -63,15 +63,37 @@ exports.sortBy = function (property, order) {
             if (order === 'asc') {
                 collection.sort(compare);
             } else {
-                collection.sort(compare).reverse();
+                collection.sort(compare).reverse;
             }
         }
         if (property !== 'age') {
-            var reverse = (order === 'asc') ? 1 : -1;
+            if (order === 'asc') {
+                collection.sort(function (one, another) {
+                    var x = one.name;
+                    var y = another.name;
+                    if (x < y) {
+                        return -1;
+                    }
+                    if (x > y) {
+                        return 1;
+                    }
 
-            return function (one, another) {
-                return reverse * ((one > another) - (another > one));
-            };
+                    return 0;
+                });
+            } else {
+                collection.sort(function (one, another) {
+                    var x = one.name;
+                    var y = another.name;
+                    if (x < y) {
+                        return 1;
+                    }
+                    if (x > y) {
+                        return -1;
+                    }
+
+                    return 0;
+                });
+            }
         }
 
         return collection;
