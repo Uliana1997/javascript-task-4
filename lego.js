@@ -3,27 +3,21 @@
 exports.isStar = false;
 
 var priority = {
-    'filterIn': 1,
-    'sortBy': 2,
-    'select': 3,
-    'limit': 4,
-    'format': 5
+    filterIn: 1,
+    sortBy: 2,
+    select: 3,
+    limit: 4,
+    format: 5
 };
 
 exports.query = function (collection) {
-    var newCollection = copyCollections(collection);
+    var newCollection = copyCollection(collection);
     var fields = Array.prototype.slice.call(arguments).slice(1);
     function compare(one, another) {
         var x = priority[one.name];
         var y = priority[another.name];
-        if (x < y) {
-            return -1;
-        }
-        if (x > y) {
-            return 1;
-        }
 
-        return 0;
+        return x - y;
     }
     fields.sort(compare);
     fields.forEach(function (func) {
@@ -33,7 +27,7 @@ exports.query = function (collection) {
     return newCollection;
 };
 
-function copyCollections(collection) {
+function copyCollection(collection) {
 
     return (collection.map(function (friend) {
 
@@ -65,44 +59,19 @@ exports.sortBy = function (property, order) {
         function compare(one, another) {
             return one[property] - another[property];
         }
-        function comparedesc(one, another) {
-            return another[property] - one[property];
-        }
         if (property === 'age') {
             if (order === 'asc') {
                 collection.sort(compare);
             } else {
-                collection.sort(comparedesc);
+                collection.sort(compare).reverse();
             }
         }
         if (property !== 'age') {
-            if (order === 'asc') {
-                collection.sort(function (one, another) {
-                    var x = one.name;
-                    var y = another.name;
-                    if (x < y) {
-                        return -1;
-                    }
-                    if (x > y) {
-                        return 1;
-                    }
+            var reverse = (order === 'asc') ? 1 : -1;
 
-                    return 0;
-                });
-            } else {
-                collection.sort(function (one, another) {
-                    var x = one.name;
-                    var y = another.name;
-                    if (x < y) {
-                        return 1;
-                    }
-                    if (x > y) {
-                        return -1;
-                    }
-
-                    return 0;
-                });
-            }
+            return function (one, another) {
+                return reverse * ((one > another) - (another > one));
+            };
         }
 
         return collection;
@@ -117,17 +86,10 @@ exports.limit = function (count) {
 
 exports.filterIn = function (property, values) {
     return function filterIn(collection) {
-        var newSorted = [];
-        collection.forEach(function (friend) {
-            for (var field in friend) {
-                if (property === field.toString() &&
-                values.indexOf(friend[field]) !== -1) {
-                    newSorted.push(Object.assign({}, friend));
-                }
-            }
+        return collection.filter(function (friend) {
+            return (friend.hasOwnProperty(property) &&
+                values.indexOf(friend[property]) !== -1);
         });
-
-        return newSorted;
     };
 };
 
