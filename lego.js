@@ -12,15 +12,15 @@ var priority = {
 
 exports.query = function (collection) {
     var newCollection = copyCollection(collection);
-    var fields = Array.prototype.slice.call(arguments).slice(1);
+    var functions = Array.prototype.slice.call(arguments).slice(1);
     function compare(one, another) {
         var x = priority[one.name];
         var y = priority[another.name];
 
         return x - y;
     }
-    fields.sort(compare);
-    fields.forEach(function (func) {
+    functions.sort(compare);
+    functions.forEach(function (func) {
         newCollection = func(newCollection);
     });
 
@@ -56,44 +56,28 @@ exports.select = function () {
 
 exports.sortBy = function (property, order) {
     return function sortBy(collection) {
-        function compare(one, another) {
-            return one[property] - another[property];
-        }
-        if (property === 'age') {
-            if (order === 'asc') {
-                collection.sort(compare);
-            } else {
-                collection.sort(compare).reverse();
-            }
-        }
-        if (property !== 'age') {
-            if (order === 'asc') {
-                collection.sort(function (one, another) {
-                    var x = one.name;
-                    var y = another.name;
-                    if (x < y) {
-                        return -1;
-                    }
-                    if (x > y) {
-                        return 1;
-                    }
+        if (order === 'asc') {
+            collection.sort (function (one, another) {
+                if (one[property] < another[property]) {
+                    return -1;
+                }
+                if (one[property] > another[property]) {
+                    return 1;
+                }
 
-                    return 0;
-                });
-            } else {
-                collection.sort(function (one, another) {
-                    var x = one.name;
-                    var y = another.name;
-                    if (x < y) {
-                        return 1;
-                    }
-                    if (x > y) {
-                        return -1;
-                    }
+                return 0;
+            });
+        } else {
+            collection.sort (function (one, another) {
+                if (one[property] < another[property]) {
+                    return 1;
+                }
+                if (one[property] > another[property]) {
+                    return -1;
+                }
 
-                    return 0;
-                });
-            }
+                return 0;
+            });
         }
 
         return collection;
