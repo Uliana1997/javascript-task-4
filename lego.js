@@ -63,7 +63,7 @@ exports.sortBy = function (property, order) {
             if (order === 'asc') {
                 collection.sort(compare);
             } else {
-                collection.sort(compare).reverse;
+                collection.sort(compare).reverse();
             }
         }
         if (property !== 'age') {
