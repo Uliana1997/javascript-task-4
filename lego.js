@@ -2,6 +2,7 @@
 
 exports.isStar = false;
 
+// Чем больше число тем ниже приоритет функции
 var priority = {
     filterIn: 1,
     sortBy: 2,
@@ -39,45 +40,36 @@ exports.select = function () {
     var fields = Array.prototype.slice.call(arguments);
 
     return function select(collection) {
-        var result = [];
-        collection.forEach(function (friend) {
+
+        collection.map(function (friend) {
             var newFriend = {};
             for (var field in friend) {
                 if (fields.indexOf(field) !== -1) {
                     newFriend[field] = friend[field];
                 }
             }
-            result.push(newFriend);
-        });
 
-        return result;
+            return newFriend;
+        });
     };
 };
 
 exports.sortBy = function (property, order) {
     return function sortBy(collection) {
+        function compare(one, another) {
+            if (one[property] > another[property]) {
+
+                return 1;
+            } else {
+
+                return -1;
+            }
+        }
+
         if (order === 'asc') {
-            collection.sort (function (one, another) {
-                if (one[property] < another[property]) {
-                    return -1;
-                }
-                if (one[property] > another[property]) {
-                    return 1;
-                }
-
-                return 0;
-            });
+            collection.sort(compare);
         } else {
-            collection.sort (function (one, another) {
-                if (one[property] < another[property]) {
-                    return 1;
-                }
-                if (one[property] > another[property]) {
-                    return -1;
-                }
-
-                return 0;
-            });
+            collection.sort(compare).reverse();
         }
 
         return collection;
@@ -92,12 +84,26 @@ exports.limit = function (count) {
 
 exports.filterIn = function (property, values) {
     return function filterIn(collection) {
-        return collection.filter(function (friend) {
-            return (friend.hasOwnProperty(property) &&
-                values.indexOf(friend[property]) !== -1);
+        var newSorted = [];
+        collection.forEach(function (friend) {
+            for (var field in friend) {
+                if (property === field.toString() &&
+                values.indexOf(friend[field]) !== -1) {
+                    newSorted.push(Object.assign({}, friend));
+                }
+            }
         });
+
+        return newSorted;
     };
 };
+
+function filter_(property, field, friend) {
+    if (property === field.toString() &&
+    values.indexOf(friend[field]) !== -1) {
+        return true;
+    }
+}
 
 exports.format = function (property, formatter) {
     return function format(collection) {
