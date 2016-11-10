@@ -41,16 +41,18 @@ exports.select = function () {
 
     return function select(collection) {
 
-        return collection.map(function (friend) {
-            var newFriend = {};
-            for (var field in friend) {
+        return collection.reduce(function (prev, curr) {
+            var friend = {};
+            for (var field in curr) {
                 if (fields.indexOf(field) !== -1) {
-                    newFriend[field] = friend[field];
+                    friend[field] = curr[field];
                 }
             }
+            prev.push(friend);
 
-            return newFriend;
-        });
+            return prev;
+        }, []);
+
     };
 };
 
