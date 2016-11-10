@@ -41,7 +41,7 @@ exports.select = function () {
 
     return function select(collection) {
 
-        collection.map(function (friend) {
+        return collection.map(function (friend) {
             var newFriend = {};
             for (var field in friend) {
                 if (fields.indexOf(field) !== -1) {
@@ -57,13 +57,7 @@ exports.select = function () {
 exports.sortBy = function (property, order) {
     return function sortBy(collection) {
         function compare(one, another) {
-            if (one[property] > another[property]) {
-
-                return 1;
-            } else {
-
-                return -1;
-            }
+            return (one[property] > another[property]) ? 1 : -1;
         }
 
         if (order === 'asc') {
@@ -97,13 +91,6 @@ exports.filterIn = function (property, values) {
         return newSorted;
     };
 };
-
-function filter_(property, field, friend) {
-    if (property === field.toString() &&
-    values.indexOf(friend[field]) !== -1) {
-        return true;
-    }
-}
 
 exports.format = function (property, formatter) {
     return function format(collection) {
