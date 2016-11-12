@@ -15,14 +15,11 @@ exports.query = function (collection) {
     var newCollection = copyCollection(collection);
     var functions = Array.prototype.slice.call(arguments).slice(1);
     function compare(one, another) {
-        var x = priority[one.name];
-        var y = priority[another.name];
-
-        return x - y;
+        return priority[one.name] - priority[another.name];
     }
     functions.sort(compare);
-    functions.forEach(function (func) {
-        newCollection = func(newCollection);
+    functions.forEach(function (each_query) {
+        newCollection = each_query(newCollection);
     });
 
     return newCollection;
