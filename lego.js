@@ -18,8 +18,8 @@ exports.query = function (collection) {
         return priority[one.name] - priority[another.name];
     }
     functions.sort(compare);
-    functions.forEach(function (each_query) {
-        newCollection = each_query(newCollection);
+    functions.forEach(function (eachQuery) {
+        newCollection = eachQuery(newCollection);
     });
 
     return newCollection;
